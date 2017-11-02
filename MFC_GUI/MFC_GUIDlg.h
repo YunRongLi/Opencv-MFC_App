@@ -6,7 +6,24 @@
 #include "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afxwin.h"
 #include "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afxcmn.h"
 
+#include <opencv\cv.h>
+#include <opencv\highgui.h>
 
+
+#include <Windows.h>
+#include <tchar.h>
+#include <strsafe.h>
+
+#include "CCamCapture.h"
+
+typedef enum {
+	START,
+	PAUSE,
+	STOP
+}CaptureState;
+
+#define MAX_THREADS 1;
+#define BUF_SIZE 255;
 // CMFC_GUIDlg ¹ï¸Ü¤è¶ô
 class CMFC_GUIDlg : public CDialogEx
 {
@@ -36,12 +53,6 @@ protected:
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-	typedef enum{
-		START,
-		PAUSE,
-		STOP
-	}CaptureState;
-
 	CaptureState Capturestate;
 
 	CButton m_Button_Startcapture;
@@ -57,6 +68,7 @@ public:
 	CEdit m_EDIT_Param1_Value;
 	CEdit m_EDIT_Param2_Value;
 	CEdit m_EDIT_Param3_Value;
+
 	afx_msg void OnCbnSelchangeComboTrackingMethod();
 	afx_msg void OnBnClickedButtonStartcapture();
 	afx_msg void OnBnClickedButtonPause();
@@ -66,13 +78,12 @@ public:
 	afx_msg void OnEnChangeEditParam1Value();
 	afx_msg void OnEnChangeEditParam2Value();
 
-	double TM = 0.0;
-	double MS_Vmin = 0.0;
-	double MS_Vmax = 0.0;
-	double CS_Vmin = 0.0;
-	double CS_Vmax = 0.0;
-	double CS_Smin = 0.0;
+	float TM_Param = 0.0;
+	float MS_Vmin_Param = 0.0;
+	float MS_Vmax_Param = 0.0;
+	float CS_Vmin_Param = 0.0;
+	float CS_Vmax_Param = 0.0;
+	float CS_Smin_Param = 0.0;
 };
-
 
 

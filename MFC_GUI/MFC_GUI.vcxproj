@@ -185,6 +185,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CCamCapture.h" />
     <ClInclude Include="MFC_GUI.h" />
     <ClInclude Include="MFC_GUIDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCamCapture.cpp" />
     <ClCompile Include="MFC_GUI.cpp" />
     <ClCompile Include="MFC_GUIDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -209,11 +211,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\MFC_GUI.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\opencv_pratice\opencv_pratice.vcxproj">
-      <Project>{7ee30caf-6aad-4db8-a1bb-1ada60e4d4a6}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

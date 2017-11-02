@@ -14,7 +14,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 // 對 App About 使用 CAboutDlg 對話方塊
 
 class CAboutDlg : public CDialogEx
@@ -47,10 +46,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CMFC_GUIDlg 對話方塊
-
-
 
 CMFC_GUIDlg::CMFC_GUIDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_MFC_GUI_DIALOG, pParent)
@@ -89,7 +85,6 @@ BEGIN_MESSAGE_MAP(CMFC_GUIDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_Param1_Value, &CMFC_GUIDlg::OnEnChangeEditParam1Value)
 	ON_EN_CHANGE(IDC_EDIT_Param2_Value, &CMFC_GUIDlg::OnEnChangeEditParam2Value)
 END_MESSAGE_MAP()
-
 
 // CMFC_GUIDlg 訊息處理常式
 
@@ -145,10 +140,12 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 	m_SLIDER_Param1.EnableWindow(0);
 	m_SLIDER_Param2.EnableWindow(0);
 	m_SLIDER_Param3.EnableWindow(0);
-
+	
 	m_EDIT_Param1_Value.EnableWindow(0);
 	m_EDIT_Param2_Value.EnableWindow(0);
 	m_EDIT_Param3_Value.EnableWindow(0);
+
+	CCamCapture Ccamcaputure;
 
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
@@ -202,8 +199,6 @@ HCURSOR CMFC_GUIDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
 void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 {
 	// TODO: 在此加入控制項告知處理常式程式碼
@@ -239,7 +234,7 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_STATIC_Param1.SetWindowTextW(_T("TM"));
 			m_STATIC_Param2.SetWindowTextW(_T(""));
 			m_STATIC_Param3.SetWindowTextW(_T(""));
-			
+
 			m_SLIDER_Param2.EnableWindow(0);
 			m_SLIDER_Param3.EnableWindow(0);
 
@@ -248,12 +243,14 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 
 			m_SLIDER_Param1.SetRange(0, 1000, true);
 
-			//CString SliderTM_Pos_str = NULL;
-			//SliderTM_Pos_str.Format(_T("%.1f"), TM);
+			CString SliderTM_Pos_str = NULL;
+			SliderTM_Pos_str.Format(_T("%.1f"), TM_Param);
 
-			//m_EDIT_Param1_Value.SetWindowTextW(SliderTM_Pos_str);
-			int SliderTM_Pos = (int)(TM * 10);
-			m_SLIDER_Param1.SetPos(SliderTM_Pos);
+			m_EDIT_Param1_Value.SetWindowTextW(SliderTM_Pos_str);
+
+			int TM_Pos = (int)(TM_Param * 10);
+
+			m_SLIDER_Param1.SetPos(TM_Pos);
 		}
 		else if (Method_index == 1) {
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
@@ -269,15 +266,20 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_SLIDER_Param1.SetRange(-100, 500, true);
 			m_SLIDER_Param2.SetRange(-200, 300, true);
 
+			CString SliderVmin_Pos_str = NULL;
+			CString SliderVmax_Pos_str = NULL;
 
-			//CString SliderVmin_Pos_str = NULL;
-			//CString SliderVmax_Pos_str = NULL;
-			//SliderVmin_Pos_str.Format(_T("%.1f"), MS_Vmin);
-			//SliderVmax_Pos_str.Format(_T("%.1f"), MS_Vmax);
+			SliderVmin_Pos_str.Format(_T("%.1f"), MS_Vmin_Param);
+			SliderVmax_Pos_str.Format(_T("%.1f"), MS_Vmax_Param);
 
-			//m_EDIT_Param1_Value.SetWindowTextW(SliderVmin_Pos_str);
-			//m_EDIT_Param2_Value.SetWindowTextW(SliderVmax_Pos_str);
+			m_EDIT_Param1_Value.SetWindowTextW(SliderVmin_Pos_str);
+			m_EDIT_Param2_Value.SetWindowTextW(SliderVmax_Pos_str);
 
+			int MS_Vmin_Pos = (int)(MS_Vmin_Param * 10);
+			int MS_Vmax_Pos = (int)(MS_Vmax_Param * 10);
+			
+			m_SLIDER_Param1.SetPos(MS_Vmin_Pos);
+			m_SLIDER_Param2.SetPos(MS_Vmax_Pos);
 		}
 		else if (Method_index == 2) {
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
@@ -295,8 +297,29 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_SLIDER_Param1.SetRange(-250, 250, true);
 			m_SLIDER_Param2.SetRange(-500, 500, true);
 			m_SLIDER_Param3.SetRange(0, 100, true);
+
+			CString SliderVmin_Pos_str = NULL;
+			CString SliderVmax_Pos_str = NULL;
+			CString SliderSmin_Pos_str = NULL;
+
+			SliderVmin_Pos_str.Format(_T("%.1f"), CS_Vmin_Param);
+			SliderVmax_Pos_str.Format(_T("%.1f"), CS_Vmax_Param);
+			SliderSmin_Pos_str.Format(_T("%.1f"), CS_Smin_Param);
+
+			m_EDIT_Param1_Value.SetWindowTextW(SliderVmin_Pos_str);
+			m_EDIT_Param2_Value.SetWindowTextW(SliderVmax_Pos_str);
+			m_EDIT_Param3_Value.SetWindowTextW(SliderSmin_Pos_str);
+
+			int CS_Vmin_Pos = (int)(CS_Vmin_Param * 10);
+			int CS_Vmax_Pos = (int)(CS_Vmax_Param * 10);
+			int CS_Smin_Pos = (int)(CS_Smin_Param * 10);
+
+			m_SLIDER_Param1.SetPos(CS_Vmin_Pos);
+			m_SLIDER_Param2.SetPos(CS_Vmax_Pos);
+			m_SLIDER_Param3.SetPos(CS_Smin_Pos);
 		}
 	}
+	
 }
 
 
@@ -332,12 +355,11 @@ void CMFC_GUIDlg::OnBnClickedButtonStartcapture()
 			m_EDIT_Param1_Value.EnableWindow(1);
 			m_EDIT_Param2_Value.EnableWindow(1);
 			m_EDIT_Param3_Value.EnableWindow(1);
-
 		}
 	}
 	else{
 		Capturestate = STOP;
-
+		
 		m_Button_Startcapture.SetWindowTextW(_T("Start Capture"));
 		m_Button_Parse.EnableWindow(0);
 
@@ -376,7 +398,7 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam1(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
-
+	
 	float Slider_Pos_;
 	CString Slider_Pos_str = NULL;
 	Slider_Pos_ = (float)m_SLIDER_Param1.GetPos()/10;
@@ -385,15 +407,17 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_EDIT_Param1_Value.SetWindowTextW(Slider_Pos_str);
 	
 	int Method_index = m_COMBO_Tracking_Method.GetCurSel();
-	if (Method_index == 0) {
-		TM = Slider_Pos_;
+	if (Method_index == 0 && GetFocus() == &m_SLIDER_Param1) {
+		TM_Param = Slider_Pos_;
 	}
-	else if (Method_index == 1) {
-		MS_Vmin = Slider_Pos_;
+	else if (Method_index == 1 && GetFocus() == &m_SLIDER_Param1) {
+		MS_Vmin_Param = Slider_Pos_;
 	}
-	else if (Method_index == 2) {
-		CS_Vmin = Slider_Pos_;
+	else if (Method_index == 2 && GetFocus() == &m_SLIDER_Param1) {
+		CS_Vmin_Param = Slider_Pos_;
 	}
+
+
 }
 
 void CMFC_GUIDlg::OnNMCustomdrawSliderParam2(NMHDR *pNMHDR, LRESULT *pResult)
@@ -409,13 +433,12 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam2(NMHDR *pNMHDR, LRESULT *pResult)
 
 	m_EDIT_Param2_Value.SetWindowTextW(Slider_Pos_str);
 	int Method_index = m_COMBO_Tracking_Method.GetCurSel();
-	if (Method_index == 1) {
-		MS_Vmax = Slider_Pos_;
+	if (Method_index == 1 && GetFocus() == &m_SLIDER_Param2) {
+		MS_Vmax_Param = Slider_Pos_;
 	}
-	else if (Method_index == 2) {
-		CS_Vmax = Slider_Pos_;
+	else if (Method_index == 2 && GetFocus() == &m_SLIDER_Param2) {
+		CS_Vmax_Param = Slider_Pos_;
 	}
-
 }
 
 void CMFC_GUIDlg::OnNMCustomdrawSliderParam3(NMHDR *pNMHDR, LRESULT *pResult)
@@ -431,7 +454,7 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam3(NMHDR *pNMHDR, LRESULT *pResult)
 
 	m_EDIT_Param3_Value.SetWindowTextW(Slider_Pos_str);
 
-	CS_Smin = Slider_Pos_;
+	CS_Smin_Param = Slider_Pos_;
 }
 
 
@@ -463,7 +486,7 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param1_Value) {
 		CString EditParam1Str = NULL;
 		int intNum;
-		double floatNum;
+		float floatNum;
 
 		m_EDIT_Param1_Value.GetWindowTextW(EditParam1Str);
 		floatNum = _ttof(EditParam1Str);
@@ -473,20 +496,20 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 
 		int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 		if (Method_index == 0) {
-			TM = floatNum;
+			TM_Param = floatNum;
 		}
 		else if (Method_index == 1) {
-			MS_Vmin = floatNum;
+			MS_Vmin_Param = floatNum;
 		}
 		else if (Method_index == 2) {
-			CS_Vmin = floatNum;
+			CS_Vmin_Param = floatNum;
 		}
 		return TRUE;
 	}
 	else if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param2_Value) {
 		CString EditParam2Str = NULL;
 		int intNum;
-		double floatNum;
+		float floatNum;
 
 		m_EDIT_Param2_Value.GetWindowTextW(EditParam2Str);
 		floatNum = _ttof(EditParam2Str);
@@ -495,10 +518,10 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 		m_SLIDER_Param2.SetPos(intNum);
 		int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 		if (Method_index == 1) {
-			MS_Vmax = floatNum;
+			MS_Vmax_Param = floatNum;
 		}
 		else if (Method_index == 2) {
-			CS_Vmax = floatNum;
+			CS_Vmax_Param = floatNum;
 		}
 
 		return TRUE;
@@ -506,7 +529,7 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 	else if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param3_Value) {
 		CString EditParam3Str = NULL;
 		int intNum;
-		double floatNum;
+		float floatNum;
 
 		m_EDIT_Param3_Value.GetWindowTextW(EditParam3Str);
 		floatNum = _ttof(EditParam3Str);
@@ -514,9 +537,11 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 
 		m_SLIDER_Param3.SetPos(intNum);
 
-		CS_Smin = floatNum;
+		CS_Smin_Param = floatNum;
 		return TRUE;
 	}
 
 	return FALSE;
 }
+
+

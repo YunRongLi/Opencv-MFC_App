@@ -86,36 +86,12 @@ int main(int, char **) {
 	for (;;) {
 		cap >> video_mat;
 		imshow("Show_Mat", video_mat);
-		if (waitKey(30) >= 0) {
+		if (waitKey(3000) >= 0) {
 			break;
 		}
 	}
 	cap.release();
 	return 0;
 
-	/*HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	if (SUCCEEDED(hr))
-	{
-		IEnumMoniker *pEnum;
-
-		hr = EnumerateDevices(CLSID_VideoInputDeviceCategory, &pEnum);
-		if (SUCCEEDED(hr))
-		{
-			DisplayDeviceInformation(pEnum);
-			pEnum->Release();
-		}*/
-		/*hr = EnumerateDevices(CLSID_AudioInputDeviceCategory, &pEnum);
-		if (SUCCEEDED(hr))
-		{
-			DisplayDeviceInformation(pEnum);
-			pEnum->Release();
-		}
-		hr = EnumerateDevices(CLSID_AudioInputDeviceCategory, &pEnum);
-		if (SUCCEEDED(hr))
-		{
-			DisplayDeviceInformation(pEnum);
-			pEnum->Release();
-		}*/
-		//	CoUninitialize();
-		//}
+	
 }
