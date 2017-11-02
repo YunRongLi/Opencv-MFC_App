@@ -145,8 +145,6 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 	m_EDIT_Param2_Value.EnableWindow(0);
 	m_EDIT_Param3_Value.EnableWindow(0);
 
-	CCamCapture Ccamcaputure;
-
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 

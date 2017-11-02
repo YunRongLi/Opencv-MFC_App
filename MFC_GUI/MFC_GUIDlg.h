@@ -9,7 +9,6 @@
 #include <opencv\cv.h>
 #include <opencv\highgui.h>
 
-
 #include <Windows.h>
 #include <tchar.h>
 #include <strsafe.h>
