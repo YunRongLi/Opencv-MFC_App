@@ -362,6 +362,7 @@ void CMFC_GUIDlg::OnBnClickedButtonPause()
 	if(Capturestate == START){
 		m_Button_Parse.SetWindowTextW(_T("Continue"));
 		Capturestate = PAUSE;
+
 	}
 	else{
 		m_Button_Parse.SetWindowTextW(_T("Pause"));
