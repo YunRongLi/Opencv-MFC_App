@@ -18,6 +18,7 @@ CCamCapture::~CCamCapture() {
 
 //Finish
 BOOL CCamCapture::CreateCapture() {
+	onGrabLoop_cvInit();
 	if (m_bCamInited) {
 		return true;
 	}

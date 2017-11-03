@@ -83,6 +83,10 @@ public:
 	float CS_Vmin_Param = 0.0;
 	float CS_Vmax_Param = 0.0;
 	float CS_Smin_Param = 0.0;
+
+	CCamCapture ccamcapture;
 };
+
+
 
 

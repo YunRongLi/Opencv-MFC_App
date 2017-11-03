@@ -145,6 +145,7 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 	m_EDIT_Param2_Value.EnableWindow(0);
 	m_EDIT_Param3_Value.EnableWindow(0);
 
+	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -354,6 +355,9 @@ void CMFC_GUIDlg::OnBnClickedButtonStartcapture()
 			m_EDIT_Param2_Value.EnableWindow(1);
 			m_EDIT_Param3_Value.EnableWindow(1);
 		}
+
+		ccamcapture.CreateCapture();
+		
 	}
 	else{
 		Capturestate = STOP;
@@ -370,6 +374,8 @@ void CMFC_GUIDlg::OnBnClickedButtonStartcapture()
 		m_EDIT_Param1_Value.EnableWindow(0);
 		m_EDIT_Param2_Value.EnableWindow(0);
 		m_EDIT_Param3_Value.EnableWindow(0);
+
+		ccamcapture.DestoryCapture();
 	}
 }
 
