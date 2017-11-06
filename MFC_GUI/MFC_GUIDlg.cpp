@@ -376,6 +376,8 @@ void CMFC_GUIDlg::OnBnClickedButtonStartcapture()
 		m_EDIT_Param3_Value.EnableWindow(0);
 
 		ccamcapture.DestoryCapture();
+		
+		
 	}
 }
 

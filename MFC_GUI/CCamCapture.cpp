@@ -18,7 +18,6 @@ CCamCapture::~CCamCapture() {
 
 //Finish
 BOOL CCamCapture::CreateCapture() {
-	onGrabLoop_cvInit();
 	if (m_bCamInited) {
 		return true;
 	}
@@ -27,7 +26,7 @@ BOOL CCamCapture::CreateCapture() {
 			CloseHandle(m_heventThreadDone);
 		}
 
-		m_heventThreadDone = CreateThread(NULL, 0, CCamCapture::threadGrabImage, NULL, 0, m_ThreadId);
+		m_heventThreadDone = CreateThread(NULL, 0, CCamCapture::threadGrabImage, this, 0, m_ThreadId);
 
 		if (m_heventThreadDone == NULL) {
 			return false;
@@ -75,36 +74,37 @@ DWORD WINAPI CCamCapture::threadGrabImage(LPVOID pparam) {
 }
 
 void CCamCapture::SetCaptureCallback(pfnCaptureCallback pfnCaptureCB) {
-	cvSetMouseCallback("Main Dialog", onMouseCB, NULL);
+	cvSetMouseCallback("MainWindow", onMouseCB, pfnCaptureCB);
 }
 
 void CCamCapture::doGrabLoop() {
+	onGrabLoop_cvInit();
 	while (m_bCamInited) {
 		if (m_State == STARTCAPTURE) {
-			if (cvGrabFrame(m_pCapture) != NULL) {
-				if(m_pImage = NULL){
-				CvSize ImageSize = cvGetSize(m_pCapture);
-				m_pImage = cvCreateImage(ImageSize, IPL_DEPTH_8U, 3);
+			if (cvGrabFrame(m_pCapture) != NULL) {	
+				if(m_pImage == NULL){
+					CvSize ImageSize;
+					ImageSize.width  = cvGetCaptureProperty(m_pCapture, CV_CAP_PROP_FRAME_WIDTH);
+					ImageSize.height = cvGetCaptureProperty(m_pCapture, CV_CAP_PROP_FRAME_HEIGHT);
+					m_pImage = cvCreateImage(ImageSize, IPL_DEPTH_8U, 3);
+					//cvAddS(m_pImage, CV_RGB(255, 255, 255), m_pImage, NULL);
 				}
+				cvRetrieveFrame(m_pCapture);
 			}
-			
-			m_pImage = cvQueryFrame(m_pCapture);
-			
-			onGrabLoop_DrawROI(m_pImage);
-			
+			m_pImage = cvQueryFrame(m_pCapture); //
+			cvWaitKey(10);
+			onGrabLoop_DrawROI(m_pImage);	
 		}
 		else if (m_State == PAUSECAPTURE) {
-
+			
 		}
 		else if (m_State == STOPCAPTURE) {
 			m_bCamInited = FALSE;
-			cvReleaseImage(&m_pImage);
-			cvReleaseImage(&m_pROI);
+			onGrabLoop_cvClose();
 			//check Image had been release
 		}
 	}
-
-	CloseHandle(m_heventThreadDone);
+	return;
 }
 
 //Finish
@@ -114,8 +114,8 @@ void CCamCapture::onGrabLoop_cvInit() {
 	if (m_pCapture) {
 		m_bCamInited = TRUE;
 		CCamCapture::StartCapture();
-		cvNamedWindow("Main Dialog", 0);
-		cvNamedWindow("ROI Dialog", 0);
+		cvNamedWindow("MainWindow", 1);
+		cvNamedWindow("ROIWindow", 1);
 		SetCaptureCallback(m_pfnCustomCB);
 	}
 	else {
@@ -128,7 +128,11 @@ void CCamCapture::onGrabLoop_cvClose() {
 	if (m_pCapture != NULL || m_pImage != NULL || m_pROI != NULL) {
 		cvReleaseImage(&m_pImage);
 		cvReleaseImage(&m_pROI);
-		cvReleaseCapture(&m_pCapture);
+
+		//cvReleaseCapture(&m_pCapture);
+		
+		cvDestroyWindow("MainWindow");
+		cvDestroyWindow("ROIWindow");
 	}
 }
 
@@ -147,22 +151,34 @@ void CCamCapture::onMouseCB(int event, int x, int y, int flass, void* param) {
 			if (m_TargetRect.x != 0 || m_TargetRect.y != 0 || m_TargetRect.width != 0 || m_TargetRect.height != 0) {
 				cvSetImageROI(m_pImage, NULL);
 			}
-			m_TargetRect = cvRect(m_Origin.x, m_Origin.y, x - m_Origin.x, y - m_Origin.y);
+			m_TargetRect = cvRect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
+
+			CvSize Size = cvSize(m_TargetRect.width, m_TargetRect.height);
+			IplImage* mask = cvCreateImage(Size, m_pImage->depth, m_pImage->nChannels);
+			m_pROI = cvCreateImage(Size, m_pImage->depth, m_pImage->nChannels);
+			//m_pROI Size of image equal m_pImage size of ROI.
 			cvSetImageROI(m_pImage, m_TargetRect);
+
+			cvCopy(m_pImage, m_pROI, mask);
+			cvShowImage("ROIWindow", m_pROI);
+
+			cvResetImageROI(m_pImage);
+			cvReleaseImage(&m_pROI);
+			cvReleaseImage(&mask);
 		}
 	}
-	
 }
 
 //Finish
 void CCamCapture::onGrabLoop_DrawROI(IplImage* frame) {
-	if (m_bTargetObj) {
-		cvRectangle(frame, m_Origin, m_MouseCurrentPoint, CV_RGB(255,0,0),1);
-		cvShowImage("Main Dialog", frame);
-		cvReleaseImage(&frame);
+	CvRect targetRect = GetTargetRect();
+	if (m_bTargetObj == TRUE) {
+		cvRectangle(frame, m_Origin, m_MouseCurrentPoint, CV_RGB(255,0,0),5);
+		cvShowImage("MainWindow", frame);
+		//cvReleaseImage(&frame);
 	}
 	else{
-		cvShowImage("ROI Dialog",m_pROI);
+		cvShowImage("MainWindow",frame);
 	}
 }
 
@@ -171,7 +187,7 @@ IplImage* CCamCapture::GetSelectedROI() const {
 }
 
 CvRect CCamCapture::GetTargetRect() const {
-	return cvGetImageROI(m_pImage);
+	return m_TargetRect;
 }
 
 void CCamCapture::SetTargetRect(CvRect Rect) {
