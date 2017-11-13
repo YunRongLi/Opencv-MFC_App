@@ -15,7 +15,6 @@ typedef enum {
 
 class CCamCapture {
 	typedef void(__cdecl *pfnCaptureCallback)(IplImage);
-	typedef void(__cdecl *pfnCaptureCallback2)(cv::Mat& Frame);
 
 private:
 	static void onMouseCB(int event, int x, int y, int flags, void* param);

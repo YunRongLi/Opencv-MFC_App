@@ -13,7 +13,7 @@
 #include <tchar.h>
 #include <strsafe.h>
 
-#include "CCamCapture.h"
+#include "CCamCapture2.h"
 
 typedef enum {
 	START,
@@ -84,7 +84,7 @@ public:
 	float CS_Vmax_Param = 0.0;
 	float CS_Smin_Param = 0.0;
 
-	CCamCapture ccamcapture;
+	CCamCapture2 ccamcapture;
 };
 
 
