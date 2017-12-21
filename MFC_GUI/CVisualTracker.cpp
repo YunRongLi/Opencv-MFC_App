@@ -11,6 +11,7 @@ CVisualTracker::~CVisualTracker() {
 
 BOOL CVisualTracker::TrackingByTempMatching(cv::Mat& frame, cv::Rect &TrackRect) {
 	cv::Mat Frame;
+	
 	frame.copyTo(Frame);
 
 
@@ -26,7 +27,7 @@ BOOL CVisualTracker::TrackingByTempMatching(cv::Mat& frame, cv::Rect &TrackRect)
 
 	result.create(result_rows, result_cols,  Frame.type());
 
-	//cv::matchTemplate(frame, &GetROI(), result, );
+	cv::matchTemplate(Frame, m_pROI, result, m_CurParams.TM_Param);
 
 	return true;
 }
