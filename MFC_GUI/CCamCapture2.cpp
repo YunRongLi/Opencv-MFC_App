@@ -1,22 +1,19 @@
 #include "stdafx.h"
-
-
-#include "stdafx.h"
 #include "CCamCapture2.h"
 
 cv::Mat   CCamCapture2::m_Image;
 cv::Mat   CCamCapture2::m_ROI;
 cv::Rect  CCamCapture2::m_TargetRect;
-cv::Point CCamCapture2::m_Origin = NULL;
-cv::Point CCamCapture2::m_MouseCurrentPoint = NULL;
-    BOOL  CCamCapture2::m_bTargetObj = NULL;
+cv::Point CCamCapture2::m_Origin;
+cv::Point CCamCapture2::m_MouseCurrentPoint;
+    BOOL  CCamCapture2::m_bTargetObj;
 
 CCamCapture2::CCamCapture2() {
 
 }
 
 CCamCapture2::~CCamCapture2() {
-
+	m_cap.release();
 }
 
 //Finish
@@ -92,7 +89,7 @@ void CCamCapture2::doGrabLoop() {
 					m_Image.create(ImageSize, CV_8UC3);
 				}
 			}
-			m_cap.operator >> (m_Image);
+			m_cap >> (m_Image);
 			cvWaitKey(10);
 			onGrabLoop_DrawROI(m_Image);
 		}
@@ -101,8 +98,6 @@ void CCamCapture2::doGrabLoop() {
 		}
 		else if (m_State == STOPCAPTURE) {
 			m_bCamInited = FALSE;
-			onGrabLoop_cvClose();
-			//check Image had been release
 		}
 	}
 	onGrabLoop_cvClose();
@@ -111,7 +106,7 @@ void CCamCapture2::doGrabLoop() {
 
 //Finish
 void CCamCapture2::onGrabLoop_cvInit() {
-	m_cap.open(1);
+	m_cap.open(0);
 
 	if (m_cap.isOpened()) {
 		m_bCamInited = TRUE;
@@ -147,19 +142,23 @@ void CCamCapture2::onMouseCB2(int event, int x, int y, int flass, void* param) {
 	if (event == CV_EVENT_LBUTTONUP) {
 		m_bTargetObj = FALSE;
 		if (abs(x - m_Origin.x) > 5 && abs(y - m_Origin.y) > 5) {
-			/*if (m_TargetRect.x != 0 || m_TargetRect.y != 0 || m_TargetRect.width != 0 || m_TargetRect.height != 0) {
-				cv::Size ImageSize = cv::
+		/*	int width = abs(x - m_Origin.x);
+			if (width > 680) {
+				width = 680 - m_Origin.x;
+			}
+			int height = abs(y - m_Origin.y);
+			if (height > 480) {
+				height = 480 - m_Origin.y;
 			}*/
 			m_TargetRect = cv::Rect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
 
 			cv::Size Size = cv::Size(m_TargetRect.width, m_TargetRect.height);
 			m_ROI.create(m_Image.size(), m_Image.type());
-			//m_pROI Size of image equal m_pImage size of ROI.
-
+			
 			m_Image.copyTo(m_ROI);
-
-			cv::Mat mask = m_ROI(m_TargetRect);
 		 
+			cv::Mat mask = m_ROI(m_TargetRect);
+			
 			cv::imshow("ROIWindow", mask);
 
 		}

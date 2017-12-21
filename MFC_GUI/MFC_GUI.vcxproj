@@ -188,6 +188,7 @@
   <ItemGroup>
     <ClInclude Include="CCamCapture.h" />
     <ClInclude Include="CCamCapture2.h" />
+    <ClInclude Include="CVisualTracker.h" />
     <ClInclude Include="MFC_GUI.h" />
     <ClInclude Include="MFC_GUIDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -197,6 +198,7 @@
   <ItemGroup>
     <ClCompile Include="CCamCapture.cpp" />
     <ClCompile Include="CCamCapture2.cpp" />
+    <ClCompile Include="CVisualTracker.cpp" />
     <ClCompile Include="MFC_GUI.cpp" />
     <ClCompile Include="MFC_GUIDlg.cpp" />
     <ClCompile Include="stdafx.cpp">

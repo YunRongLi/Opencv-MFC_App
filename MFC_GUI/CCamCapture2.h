@@ -8,7 +8,7 @@
 
 #include "CCamCapture.h"
 
-class CCamCapture2 : CCamCapture {
+class CCamCapture2 : public CCamCapture {
 	typedef void(__cdecl *pfnCaptureCallback2)(cv::Mat& Frame);
 
 private:
@@ -31,15 +31,7 @@ protected:
 	virtual void onGrabLoop_cvInit();
 	virtual void onGrabLoop_cvClose();
 
-	BOOL m_bCamInited;          //Camera initial flag
-
-	LPDWORD m_ThreadId;
-	HANDLE m_heventThreadDone;
-
-	CCaptureState m_State;
-
 	static BOOL m_bTargetObj;
-
 public:
 	CCamCapture2();
 	~CCamCapture2();
@@ -58,5 +50,4 @@ public:
 
 	void SetTargetRect(cv::Rect Rect);
 	void SetCaptureCallback(pfnCaptureCallback2 pfnCaptureCB);
-
 };

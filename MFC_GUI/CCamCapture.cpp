@@ -100,13 +100,10 @@ void CCamCapture::doGrabLoop() {
 		}
 		else if (m_State == STOPCAPTURE) {
 			m_bCamInited = FALSE;
-			onGrabLoop_cvClose();
 			//check Image had been release
 		}
 	}
-
-	///cvReleaseCapture(&m_pCapture);
-
+	onGrabLoop_cvClose();
 	return;
 }
 
@@ -152,7 +149,7 @@ void CCamCapture::onMouseCB(int event, int x, int y, int flass, void* param) {
 		m_bTargetObj = FALSE;
 		if(abs(x - m_Origin.x) > 5 && abs(y - m_Origin.y) > 5){
 			if (m_TargetRect.x != 0 || m_TargetRect.y != 0 || m_TargetRect.width != 0 || m_TargetRect.height != 0) {
-				cvSetImageROI(m_pImage, NULL);
+				cvResetImageROI(m_pImage);
 			}
 			m_TargetRect = cvRect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
 
@@ -166,7 +163,6 @@ void CCamCapture::onMouseCB(int event, int x, int y, int flass, void* param) {
 			
 			cvShowImage("ROIWindow", m_pROI);
 			
-			cvResetImageROI(m_pImage);
 			cvReleaseImage(&m_pROI);
 			cvReleaseImage(&mask);
 		}
@@ -175,11 +171,9 @@ void CCamCapture::onMouseCB(int event, int x, int y, int flass, void* param) {
 
 //Finish
 void CCamCapture::onGrabLoop_DrawROI(IplImage* frame) {
-	CvRect targetRect = GetTargetRect();
 	if (m_bTargetObj == TRUE) {
 		cvRectangle(frame, m_Origin, m_MouseCurrentPoint, CV_RGB(255,0,0),5);
 		cvShowImage("MainWindow", frame);
-		//cvReleaseImage(&frame);
 	}
 	else{
 		cvShowImage("MainWindow",frame);
