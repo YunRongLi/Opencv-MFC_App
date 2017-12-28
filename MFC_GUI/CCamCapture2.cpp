@@ -7,9 +7,22 @@ cv::Rect  CCamCapture2::m_TargetRect;
 cv::Point CCamCapture2::m_Origin;
 cv::Point CCamCapture2::m_MouseCurrentPoint;
     BOOL  CCamCapture2::m_bTargetObj;
+	int   CCamCapture2::m_SelectState;
 
 CCamCapture2::CCamCapture2() {
+	m_Image = NULL;
 
+	m_ROI = NULL;
+
+	m_TargetRect.x = 0;
+	m_TargetRect.y = 0;
+	m_TargetRect.width = 0;
+	m_TargetRect.height = 0;
+
+	m_Origin.x = 0;
+	m_Origin.y = 0;
+
+	m_SelectState = CV_EVENT_MOUSEMOVE;
 }
 
 CCamCapture2::~CCamCapture2() {
@@ -74,27 +87,35 @@ DWORD WINAPI CCamCapture2::threadGrabImage(LPVOID pparam) {
 }
 
 void CCamCapture2::SetCaptureCallback(pfnCaptureCallback2 pfnCaptureCB) {
-	cv::setMouseCallback("MainWindow", onMouseCB2, pfnCaptureCB);
+	m_pfnCustomCB = pfnCaptureCB;
 }
 
 void CCamCapture2::doGrabLoop() {
 	onGrabLoop_cvInit();
 	while (m_bCamInited) {
 		if (m_State == STARTCAPTURE) {
+			cv::Mat frame;
 			if (m_cap.grab() != NULL) {
-				if (m_Image.empty()) {
-					cv::Size ImageSize;
-					ImageSize.width = m_cap.get(cv::CAP_PROP_FRAME_WIDTH);
-					ImageSize.height = m_cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-					m_Image.create(ImageSize, CV_8UC3);
-				}
+				m_cap >> frame;
+				frame.copyTo(m_Image);
 			}
-			m_cap >> (m_Image);
-			cvWaitKey(10);
-			onGrabLoop_DrawROI(m_Image);
+			onGrabLoop_DrawROI(frame);
+			if (m_SelectState == CV_EVENT_LBUTTONUP && m_pfnCustomCB != NULL) {
+				m_pfnCustomCB(m_Image);
+				cv::imshow("MainWindow", m_Image);
+			}
+			else {
+				cv::imshow("MainWindow", frame);
+			}
+			cv::waitKey(10);
 		}
 		else if (m_State == PAUSECAPTURE) {
-
+			if (m_Image.data != NULL && m_cap.grab() != NULL) {
+				m_cap >> m_Image;
+			}
+			if (m_cap.grab() != NULL) {
+				onGrabLoop_DrawROI(m_Image);
+			}
 		}
 		else if (m_State == STOPCAPTURE) {
 			m_bCamInited = FALSE;
@@ -106,14 +127,14 @@ void CCamCapture2::doGrabLoop() {
 
 //Finish
 void CCamCapture2::onGrabLoop_cvInit() {
-	m_cap.open(0);
+	m_cap.open(1);
 
 	if (m_cap.isOpened()) {
 		m_bCamInited = TRUE;
 		CCamCapture2::StartCapture();
 		cvNamedWindow("MainWindow", 1);
 		cvNamedWindow("ROIWindow", 1);
-		SetCaptureCallback(m_pfnCustomCB);
+		cv::setMouseCallback("MainWindow", onMouseCB2, 0);
 	}
 	else {
 		m_bCamInited = FALSE;
@@ -138,42 +159,30 @@ void CCamCapture2::onMouseCB2(int event, int x, int y, int flass, void* param) {
 	if (event == CV_EVENT_LBUTTONDOWN) {
 		m_Origin = cv::Point(x, y);
 		m_bTargetObj = TRUE;
+		m_SelectState = CV_EVENT_LBUTTONDOWN;
 	}
 	if (event == CV_EVENT_LBUTTONUP) {
-		m_bTargetObj = FALSE;
-		if (abs(x - m_Origin.x) > 5 && abs(y - m_Origin.y) > 5) {
-		/*	int width = abs(x - m_Origin.x);
-			if (width > 680) {
-				width = 680 - m_Origin.x;
+			m_bTargetObj = FALSE;
+			m_SelectState = CV_EVENT_LBUTTONUP;
+			if (abs(x - m_Origin.x) > 5 && abs(y - m_Origin.y) > 5) {
+				m_TargetRect = cv::Rect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
+			
+				cv::Mat roiImage = m_Image(m_TargetRect);
+				roiImage.copyTo(m_ROI);
 			}
-			int height = abs(y - m_Origin.y);
-			if (height > 480) {
-				height = 480 - m_Origin.y;
-			}*/
-			m_TargetRect = cv::Rect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
-
-			cv::Size Size = cv::Size(m_TargetRect.width, m_TargetRect.height);
-			m_ROI.create(m_Image.size(), m_Image.type());
-			
-			m_Image.copyTo(m_ROI);
-		 
-			cv::Mat mask = m_ROI(m_TargetRect);
-			
-			cv::imshow("ROIWindow", mask);
-
-		}
 	}
 }
 
 //Finish
 void CCamCapture2::onGrabLoop_DrawROI(cv::Mat &frame) {
-	//CvRect targetRect = GetTargetRect();
-	if (m_bTargetObj == TRUE) {
-		cv::rectangle(frame, m_Origin, m_MouseCurrentPoint, CV_RGB(255, 0, 0), 5);
+	if (m_SelectState == CV_EVENT_LBUTTONDOWN) {
+		cv::rectangle(frame, m_Origin, m_MouseCurrentPoint, CV_RGB(255, 0, 0), 1);
 		cv::imshow("MainWindow", frame);
 	}
 	else {
-		cv::imshow("MainWindow", frame);
+		if (m_ROI.data != NULL) {
+			cv::imshow("ROIWindow", m_ROI);
+		}
 	}
 }
 
@@ -188,3 +197,4 @@ cv::Rect CCamCapture2::GetTargetRect() const {
 void CCamCapture2::SetTargetRect(cv::Rect Rect) {
 	m_Image(Rect);
 }
+

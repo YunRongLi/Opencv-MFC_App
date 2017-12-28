@@ -34,10 +34,31 @@ typedef struct {
 class CVisualTracker {
 private:
 	BOOL TrackingByTempMatching(cv::Mat &Frame, cv::Rect &TrackRect);
+	BOOL TrackingByMeanShift(cv::Mat &Frame, cv::Rect &TrackRect);
+	BOOL TrackingByCamShift(cv::Mat &Frame, cv::Rect &TrackRect);
+
+	void ImgHueExtraction(cv::Mat &Frame);
+	void PrepareForBackProject(cv::Rect &selection);
+
 	VT_Method_Type m_CurType;
 	VT_Params m_CurParams;
 	TempMatchParam  m_CurTMMethod;
 	cv::Mat* m_pROI;
+
+	cv::Mat m_hsv;
+	cv::Mat m_hue;
+	cv::Mat m_mask;
+	cv::MatND m_hist;
+	cv::Mat m_backproj;
+
+	int m_vmin;
+	int m_vmax;
+	int m_smin;
+	int m_hsize;
+	float m_hranges[2];
+
+	BOOL m_bROIchanged;
+	
 	
 public:
 	CVisualTracker();

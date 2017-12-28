@@ -8,6 +8,7 @@
 
 #include "CCamCapture.h"
 
+
 class CCamCapture2 : public CCamCapture {
 	typedef void(__cdecl *pfnCaptureCallback2)(cv::Mat& Frame);
 
@@ -23,6 +24,9 @@ private:
 
 	cv::VideoCapture    m_cap;
 	pfnCaptureCallback2 m_pfnCustomCB;
+
+	static int  m_SelectState;
+		   
 
 protected:
 	static DWORD WINAPI threadGrabImage(LPVOID pparam);

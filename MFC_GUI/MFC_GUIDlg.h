@@ -15,6 +15,8 @@
 
 #include "CCamCapture2.h"
 
+#include "CVisualTracker.h"
+
 typedef enum {
 	START,
 	PAUSE,
@@ -77,15 +79,23 @@ public:
 	afx_msg void OnEnChangeEditParam1Value();
 	afx_msg void OnEnChangeEditParam2Value();
 
-	float TM_Param = 0.0;
+	TempMatchParam TM_Param = TempMatchParam::TM_SQDIFF;
 	float MS_Vmin_Param = 0.0;
 	float MS_Vmax_Param = 0.0;
 	float CS_Vmin_Param = 0.0;
 	float CS_Vmax_Param = 0.0;
 	float CS_Smin_Param = 0.0;
 
-	CCamCapture2 ccamcapture;
+	VT_Params m_Params;
+
+	static CVisualTracker cvisualtracker;
+	static CCamCapture2 ccamcapture;
+
+private:
+	static void CVisualTrackerCB(cv::Mat& Frame);
 };
+
+
 
 
 

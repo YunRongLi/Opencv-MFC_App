@@ -9,10 +9,12 @@
 #include "MFC_GUIDlg.h"
 #include "afxdialogex.h"
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+CVisualTracker CMFC_GUIDlg::cvisualtracker;
+CCamCapture2 CMFC_GUIDlg::ccamcapture;
 
 // 對 App About 使用 CAboutDlg 對話方塊
 
@@ -131,11 +133,13 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 
 	m_COMBO_Tracking_Method.SetCurSel(0);
 
+	cvisualtracker.SetMethodType(VT_Method_Type::TemplateMatch);
+
 	m_STATIC_Param1.SetWindowTextW(_T("TM"));
 	m_STATIC_Param2.SetWindowTextW(_T(""));
 	m_STATIC_Param3.SetWindowTextW(_T(""));
 
-	m_SLIDER_Param1.SetRange(0, 1000, false);
+	m_SLIDER_Param1.SetRange(0, 6, false);
 
 	m_SLIDER_Param1.EnableWindow(0);
 	m_SLIDER_Param2.EnableWindow(0);
@@ -144,6 +148,8 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 	m_EDIT_Param1_Value.EnableWindow(0);
 	m_EDIT_Param2_Value.EnableWindow(0);
 	m_EDIT_Param3_Value.EnableWindow(0);
+
+	ccamcapture.SetCaptureCallback(CMFC_GUIDlg::CVisualTrackerCB);
 
 	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
@@ -208,7 +214,7 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_STATIC_Param2.SetWindowTextW(_T(""));
 			m_STATIC_Param3.SetWindowTextW(_T(""));
 
-			m_SLIDER_Param1.SetRange(0, 1000, true);
+			m_SLIDER_Param1.SetRange(0, 6, true);
 		}
 		else if(Method_index == 1){
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
@@ -405,19 +411,46 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
 	
-	float Slider_Pos_;
+	//float Slider_Pos_;
 	CString Slider_Pos_str = NULL;
-	Slider_Pos_ = (float)m_SLIDER_Param1.GetPos()/10;
-	Slider_Pos_str.Format(_T("%.1f"), Slider_Pos_);
+
+	int Slider_Pos_ = m_SLIDER_Param1.GetPos();
+	Slider_Pos_str.Format(_T("%d"), Slider_Pos_);
 
 	m_EDIT_Param1_Value.SetWindowTextW(Slider_Pos_str);
 	
 	int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 	if (Method_index == 0 && GetFocus() == &m_SLIDER_Param1) {
-		TM_Param = Slider_Pos_;
+		switch (Slider_Pos_) {
+		case 0:
+			m_Params.TM_Param = TempMatchParam::TM_SQDIFF;
+			break;
+		case 1:
+			m_Params.TM_Param = TempMatchParam::TM_SQDIFF_NORMED;
+			break;
+		case 2:
+			m_Params.TM_Param = TempMatchParam::TM_CCORR;
+			break;
+		case 3:
+			m_Params.TM_Param = TempMatchParam::TM_CCORR_NORMED;
+			break;
+		case 4:
+			m_Params.TM_Param = TempMatchParam::TM_CCOEFF;
+			break;
+		case 5:
+			m_Params.TM_Param = TempMatchParam::TM_CCOEFF_NORMED;
+			break;
+		default:
+			break;
+		}
+
+		cvisualtracker.SetVT_Params(VT_Method_Type::TemplateMatch, m_Params);
 	}
 	else if (Method_index == 1 && GetFocus() == &m_SLIDER_Param1) {
 		MS_Vmin_Param = Slider_Pos_;
+
+
+		cvisualtracker.SetVT_Params(VT_Method_Type::MeanShift, m_Params);
 	}
 	else if (Method_index == 2 && GetFocus() == &m_SLIDER_Param1) {
 		CS_Vmin_Param = Slider_Pos_;
@@ -502,7 +535,7 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 
 		int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 		if (Method_index == 0) {
-			TM_Param = floatNum;
+			//TM_Param = floatNum;
 		}
 		else if (Method_index == 1) {
 			MS_Vmin_Param = floatNum;
@@ -550,4 +583,14 @@ BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 	return FALSE;
 }
 
+void CMFC_GUIDlg::CVisualTrackerCB(cv::Mat& Frame) {
+	cv::Mat mROI = ccamcapture.GetSelectedROI();
+	cv::Mat* mpROI = &mROI;
+	cv::Rect TrackRect = ccamcapture.GetTargetRect();
 
+	cvisualtracker.SetROI(mpROI);
+
+	cvisualtracker.Tracking(Frame, TrackRect);
+
+	cvisualtracker.ShowResult(Frame, TrackRect);
+}
