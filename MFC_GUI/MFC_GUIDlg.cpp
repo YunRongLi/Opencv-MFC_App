@@ -139,7 +139,7 @@ BOOL CMFC_GUIDlg::OnInitDialog()
 	m_STATIC_Param2.SetWindowTextW(_T(""));
 	m_STATIC_Param3.SetWindowTextW(_T(""));
 
-	m_SLIDER_Param1.SetRange(0, 6, false);
+	m_SLIDER_Param1.SetRange(1, 6, false);
 
 	m_SLIDER_Param1.EnableWindow(0);
 	m_SLIDER_Param2.EnableWindow(0);
@@ -214,24 +214,30 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_STATIC_Param2.SetWindowTextW(_T(""));
 			m_STATIC_Param3.SetWindowTextW(_T(""));
 
-			m_SLIDER_Param1.SetRange(0, 6, true);
+			m_SLIDER_Param1.SetRange(1, 6, true);
+
+			cvisualtracker.SetMethodType(VT_Method_Type::TemplateMatch);
 		}
 		else if(Method_index == 1){
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
 			m_STATIC_Param2.SetWindowTextW(_T("Vmax"));
 			m_STATIC_Param3.SetWindowTextW(_T(""));
 
-			m_SLIDER_Param1.SetRange(-100, 500, true);
-			m_SLIDER_Param2.SetRange(-200, 300, true);
+			m_SLIDER_Param1.SetRange(0, 255, true);
+			m_SLIDER_Param2.SetRange(0, 255, true);
+
+			cvisualtracker.SetMethodType(VT_Method_Type::MeanShift);
 		}
 		else if (Method_index == 2) {
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
 			m_STATIC_Param2.SetWindowTextW(_T("Vmax"));
 			m_STATIC_Param3.SetWindowTextW(_T("Smin"));
 
-			m_SLIDER_Param1.SetRange(-250, 250, true);
-			m_SLIDER_Param2.SetRange(-500, 500, true);
-			m_SLIDER_Param3.SetRange(0, 100, true);
+			m_SLIDER_Param1.SetRange(0, 255, true);
+			m_SLIDER_Param2.SetRange(0, 255, true);
+			m_SLIDER_Param3.SetRange(0, 255, true);
+
+			cvisualtracker.SetMethodType(VT_Method_Type::CAMShift);
 		}
 	}
 	else {
@@ -246,16 +252,16 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_EDIT_Param2_Value.EnableWindow(0);
 			m_EDIT_Param3_Value.EnableWindow(0);
 
-			m_SLIDER_Param1.SetRange(0, 1000, true);
+			m_SLIDER_Param1.SetRange(1, 6, true);
 
 			CString SliderTM_Pos_str = NULL;
-			SliderTM_Pos_str.Format(_T("%.1f"), TM_Param);
+			SliderTM_Pos_str.Format(_T("%d"), m_Params.TM_Param);
 
 			m_EDIT_Param1_Value.SetWindowTextW(SliderTM_Pos_str);
 
-			int TM_Pos = (int)(TM_Param * 10);
+			m_SLIDER_Param1.SetPos(m_Params.TM_Param);
 
-			m_SLIDER_Param1.SetPos(TM_Pos);
+			cvisualtracker.SetMethodType(VT_Method_Type::TemplateMatch);
 		}
 		else if (Method_index == 1) {
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
@@ -268,23 +274,22 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_EDIT_Param2_Value.EnableWindow(1);
 			m_EDIT_Param3_Value.EnableWindow(0);
 
-			m_SLIDER_Param1.SetRange(-100, 500, true);
-			m_SLIDER_Param2.SetRange(-200, 300, true);
+			m_SLIDER_Param1.SetRange(0, 255, true);
+			m_SLIDER_Param2.SetRange(0, 255, true);
 
 			CString SliderVmin_Pos_str = NULL;
 			CString SliderVmax_Pos_str = NULL;
 
-			SliderVmin_Pos_str.Format(_T("%.1f"), MS_Vmin_Param);
-			SliderVmax_Pos_str.Format(_T("%.1f"), MS_Vmax_Param);
+			SliderVmin_Pos_str.Format(_T("%d"), m_Params.MS_Param.vmin);
+			SliderVmax_Pos_str.Format(_T("%d"), m_Params.MS_Param.vmax);
 
 			m_EDIT_Param1_Value.SetWindowTextW(SliderVmin_Pos_str);
 			m_EDIT_Param2_Value.SetWindowTextW(SliderVmax_Pos_str);
-
-			int MS_Vmin_Pos = (int)(MS_Vmin_Param * 10);
-			int MS_Vmax_Pos = (int)(MS_Vmax_Param * 10);
 			
-			m_SLIDER_Param1.SetPos(MS_Vmin_Pos);
-			m_SLIDER_Param2.SetPos(MS_Vmax_Pos);
+			m_SLIDER_Param1.SetPos(m_Params.MS_Param.vmin);
+			m_SLIDER_Param2.SetPos(m_Params.MS_Param.vmax);
+
+			cvisualtracker.SetMethodType(VT_Method_Type::MeanShift);
 		}
 		else if (Method_index == 2) {
 			m_STATIC_Param1.SetWindowTextW(_T("Vmin"));
@@ -299,29 +304,27 @@ void CMFC_GUIDlg::OnCbnSelchangeComboTrackingMethod()
 			m_EDIT_Param3_Value.EnableWindow(1);
 
 
-			m_SLIDER_Param1.SetRange(-250, 250, true);
-			m_SLIDER_Param2.SetRange(-500, 500, true);
-			m_SLIDER_Param3.SetRange(0, 100, true);
+			m_SLIDER_Param1.SetRange(0, 255, true);
+			m_SLIDER_Param2.SetRange(0, 255, true);
+			m_SLIDER_Param3.SetRange(0, 255, true);
 
 			CString SliderVmin_Pos_str = NULL;
 			CString SliderVmax_Pos_str = NULL;
 			CString SliderSmin_Pos_str = NULL;
 
-			SliderVmin_Pos_str.Format(_T("%.1f"), CS_Vmin_Param);
-			SliderVmax_Pos_str.Format(_T("%.1f"), CS_Vmax_Param);
-			SliderSmin_Pos_str.Format(_T("%.1f"), CS_Smin_Param);
+			SliderVmin_Pos_str.Format(_T("%d"), m_Params.CS_Param.vmin);
+			SliderVmax_Pos_str.Format(_T("%d"), m_Params.CS_Param.vmax);
+			SliderSmin_Pos_str.Format(_T("%d"), m_Params.CS_Param.smin);
 
 			m_EDIT_Param1_Value.SetWindowTextW(SliderVmin_Pos_str);
 			m_EDIT_Param2_Value.SetWindowTextW(SliderVmax_Pos_str);
 			m_EDIT_Param3_Value.SetWindowTextW(SliderSmin_Pos_str);
 
-			int CS_Vmin_Pos = (int)(CS_Vmin_Param * 10);
-			int CS_Vmax_Pos = (int)(CS_Vmax_Param * 10);
-			int CS_Smin_Pos = (int)(CS_Smin_Param * 10);
+			m_SLIDER_Param1.SetPos(m_Params.CS_Param.vmin);
+			m_SLIDER_Param2.SetPos(m_Params.CS_Param.vmax);
+			m_SLIDER_Param3.SetPos(m_Params.CS_Param.smin);
 
-			m_SLIDER_Param1.SetPos(CS_Vmin_Pos);
-			m_SLIDER_Param2.SetPos(CS_Vmax_Pos);
-			m_SLIDER_Param3.SetPos(CS_Smin_Pos);
+			cvisualtracker.SetMethodType(VT_Method_Type::CAMShift);
 		}
 	}
 	
@@ -422,22 +425,22 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam1(NMHDR *pNMHDR, LRESULT *pResult)
 	int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 	if (Method_index == 0 && GetFocus() == &m_SLIDER_Param1) {
 		switch (Slider_Pos_) {
-		case 0:
+		case 1:
 			m_Params.TM_Param = TempMatchParam::TM_SQDIFF;
 			break;
-		case 1:
+		case 2:
 			m_Params.TM_Param = TempMatchParam::TM_SQDIFF_NORMED;
 			break;
-		case 2:
+		case 3:
 			m_Params.TM_Param = TempMatchParam::TM_CCORR;
 			break;
-		case 3:
+		case 4:
 			m_Params.TM_Param = TempMatchParam::TM_CCORR_NORMED;
 			break;
-		case 4:
+		case 5:
 			m_Params.TM_Param = TempMatchParam::TM_CCOEFF;
 			break;
-		case 5:
+		case 6:
 			m_Params.TM_Param = TempMatchParam::TM_CCOEFF_NORMED;
 			break;
 		default:
@@ -447,13 +450,14 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam1(NMHDR *pNMHDR, LRESULT *pResult)
 		cvisualtracker.SetVT_Params(VT_Method_Type::TemplateMatch, m_Params);
 	}
 	else if (Method_index == 1 && GetFocus() == &m_SLIDER_Param1) {
-		MS_Vmin_Param = Slider_Pos_;
-
+		m_Params.MS_Param.vmin = Slider_Pos_;
 
 		cvisualtracker.SetVT_Params(VT_Method_Type::MeanShift, m_Params);
 	}
 	else if (Method_index == 2 && GetFocus() == &m_SLIDER_Param1) {
-		CS_Vmin_Param = Slider_Pos_;
+		m_Params.CS_Param.vmin = Slider_Pos_;
+
+		cvisualtracker.SetVT_Params(VT_Method_Type::CAMShift, m_Params);
 	}
 
 
@@ -465,18 +469,21 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam2(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
 
-	float Slider_Pos_;
+	int Slider_Pos_ = m_SLIDER_Param2.GetPos();;
 	CString Slider_Pos_str = NULL;
-	Slider_Pos_ = (float)m_SLIDER_Param2.GetPos()/10;
-	Slider_Pos_str.Format(_T("%.1f"), Slider_Pos_);
+	Slider_Pos_str.Format(_T("%d"), Slider_Pos_);
 
 	m_EDIT_Param2_Value.SetWindowTextW(Slider_Pos_str);
 	int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 	if (Method_index == 1 && GetFocus() == &m_SLIDER_Param2) {
-		MS_Vmax_Param = Slider_Pos_;
+		m_Params.MS_Param.vmax = Slider_Pos_;
+
+		cvisualtracker.SetVT_Params(VT_Method_Type::MeanShift, m_Params);
 	}
 	else if (Method_index == 2 && GetFocus() == &m_SLIDER_Param2) {
-		CS_Vmax_Param = Slider_Pos_;
+		m_Params.CS_Param.vmax = Slider_Pos_;
+
+		cvisualtracker.SetVT_Params(VT_Method_Type::CAMShift, m_Params);
 	}
 }
 
@@ -486,14 +493,16 @@ void CMFC_GUIDlg::OnNMCustomdrawSliderParam3(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: 在此加入控制項告知處理常式程式碼
 	*pResult = 0;
 
-	float Slider_Pos_;
+	int Slider_Pos_ = m_SLIDER_Param3.GetPos();
 	CString Slider_Pos_str = NULL;
-	Slider_Pos_ = (float)m_SLIDER_Param3.GetPos()/10;
-	Slider_Pos_str.Format(_T("%.1f"), Slider_Pos_);
+
+	Slider_Pos_str.Format(_T("%d"), Slider_Pos_);
 
 	m_EDIT_Param3_Value.SetWindowTextW(Slider_Pos_str);
 
-	CS_Smin_Param = Slider_Pos_;
+	m_Params.CS_Param.vmax = Slider_Pos_;
+
+	cvisualtracker.SetVT_Params(VT_Method_Type::CAMShift, m_Params);
 }
 
 
@@ -524,59 +533,74 @@ void CMFC_GUIDlg::OnEnChangeEditParam2Value()
 BOOL CMFC_GUIDlg::PreTranslateMessage(MSG* pMsg) {
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param1_Value) {
 		CString EditParam1Str = NULL;
-		int intNum;
-		float floatNum;
+		int Param1;
 
 		m_EDIT_Param1_Value.GetWindowTextW(EditParam1Str);
-		floatNum = _ttof(EditParam1Str);
-		intNum = (int)(floatNum * 10);
+		Param1 = _ttoi(EditParam1Str);
 
-		m_SLIDER_Param1.SetPos(intNum);
+		m_SLIDER_Param1.SetPos(Param1);
 
 		int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 		if (Method_index == 0) {
-			//TM_Param = floatNum;
+			switch (Param1) {
+			case 1:
+				m_Params.TM_Param = TempMatchParam::TM_SQDIFF;
+				break;
+			case 2:
+				m_Params.TM_Param = TempMatchParam::TM_SQDIFF_NORMED;
+				break;
+			case 3:
+				m_Params.TM_Param = TempMatchParam::TM_CCORR;
+				break;
+			case 4:
+				m_Params.TM_Param = TempMatchParam::TM_CCORR_NORMED;
+				break;
+			case 5:
+				m_Params.TM_Param = TempMatchParam::TM_CCOEFF;
+				break;
+			case 6:
+				m_Params.TM_Param = TempMatchParam::TM_CCOEFF_NORMED;
+				break;
+			default:
+				break;
+			}
 		}
 		else if (Method_index == 1) {
-			MS_Vmin_Param = floatNum;
+			m_Params.MS_Param.vmin = Param1;
 		}
 		else if (Method_index == 2) {
-			CS_Vmin_Param = floatNum;
+			m_Params.CS_Param.vmin = Param1;
 		}
 		return TRUE;
 	}
 	else if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param2_Value) {
 		CString EditParam2Str = NULL;
-		int intNum;
-		float floatNum;
+		int Param2;
 
 		m_EDIT_Param2_Value.GetWindowTextW(EditParam2Str);
-		floatNum = _ttof(EditParam2Str);
-		intNum = (int)(floatNum * 10);
+		Param2 = _ttoi(EditParam2Str);
 
-		m_SLIDER_Param2.SetPos(intNum);
+		m_SLIDER_Param2.SetPos(Param2);
 		int Method_index = m_COMBO_Tracking_Method.GetCurSel();
 		if (Method_index == 1) {
-			MS_Vmax_Param = floatNum;
+			m_Params.MS_Param.vmax = Param2;
 		}
 		else if (Method_index == 2) {
-			CS_Vmax_Param = floatNum;
+			m_Params.CS_Param.vmax = Param2;
 		}
 
 		return TRUE;
 	}
 	else if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN && GetFocus() == &m_EDIT_Param3_Value) {
 		CString EditParam3Str = NULL;
-		int intNum;
-		float floatNum;
+		int Param3;
 
 		m_EDIT_Param3_Value.GetWindowTextW(EditParam3Str);
-		floatNum = _ttof(EditParam3Str);
-		intNum = (int)(floatNum * 10);
+		Param3 = _ttoi(EditParam3Str);
 
-		m_SLIDER_Param3.SetPos(intNum);
+		m_SLIDER_Param3.SetPos(Param3);
 
-		CS_Smin_Param = floatNum;
+		m_Params.CS_Param.smin = Param3;
 		return TRUE;
 	}
 

@@ -79,13 +79,6 @@ public:
 	afx_msg void OnEnChangeEditParam1Value();
 	afx_msg void OnEnChangeEditParam2Value();
 
-	TempMatchParam TM_Param = TempMatchParam::TM_SQDIFF;
-	float MS_Vmin_Param = 0.0;
-	float MS_Vmax_Param = 0.0;
-	float CS_Vmin_Param = 0.0;
-	float CS_Vmax_Param = 0.0;
-	float CS_Smin_Param = 0.0;
-
 	VT_Params m_Params;
 
 	static CVisualTracker cvisualtracker;

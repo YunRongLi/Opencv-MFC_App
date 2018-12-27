@@ -26,7 +26,6 @@ private:
 	pfnCaptureCallback2 m_pfnCustomCB;
 
 	static int  m_SelectState;
-		   
 
 protected:
 	static DWORD WINAPI threadGrabImage(LPVOID pparam);

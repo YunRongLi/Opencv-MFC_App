@@ -42,7 +42,7 @@ private:
 
 	VT_Method_Type m_CurType;
 	VT_Params m_CurParams;
-	TempMatchParam  m_CurTMMethod;
+
 	cv::Mat* m_pROI;
 
 	cv::Mat m_hsv;
@@ -50,16 +50,17 @@ private:
 	cv::Mat m_mask;
 	cv::MatND m_hist;
 	cv::Mat m_backproj;
+	cv::Mat m_res;
 
+	int m_hmin;
+	int m_hmax;
 	int m_vmin;
 	int m_vmax;
 	int m_smin;
 	int m_hsize;
-	float m_hranges[2];
+	float m_hranges[2] = {0 , 180};
 
-	BOOL m_bROIchanged;
-	
-	
+	BOOL m_bROIchanged;	
 public:
 	CVisualTracker();
 	~CVisualTracker();

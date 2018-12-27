@@ -127,7 +127,7 @@ void CCamCapture2::doGrabLoop() {
 
 //Finish
 void CCamCapture2::onGrabLoop_cvInit() {
-	m_cap.open(1);
+	m_cap.open(0);
 
 	if (m_cap.isOpened()) {
 		m_bCamInited = TRUE;
@@ -166,7 +166,7 @@ void CCamCapture2::onMouseCB2(int event, int x, int y, int flass, void* param) {
 			m_SelectState = CV_EVENT_LBUTTONUP;
 			if (abs(x - m_Origin.x) > 5 && abs(y - m_Origin.y) > 5) {
 				m_TargetRect = cv::Rect(m_Origin.x, m_Origin.y, abs(x - m_Origin.x), abs(y - m_Origin.y));
-			
+				
 				cv::Mat roiImage = m_Image(m_TargetRect);
 				roiImage.copyTo(m_ROI);
 			}
@@ -197,4 +197,3 @@ cv::Rect CCamCapture2::GetTargetRect() const {
 void CCamCapture2::SetTargetRect(cv::Rect Rect) {
 	m_Image(Rect);
 }
-
